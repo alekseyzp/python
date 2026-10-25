@@ -26,6 +26,17 @@ jobs:
           repository: skulitom/Nestbolt
           ref: 4045822eb1fce0bb9253d637ca56df8b22cc8b6e
           path: upstream
+          sparse-checkout: |
+            .cargo
+            crates
+            scripts
+            web
+            Cargo.toml
+            Cargo.lock
+            rust-toolchain.toml
+            THIRD_PARTY_NOTICES
+            LICENSE
+          sparse-checkout-cone-mode: false
           persist-credentials: false
       - name: Set up Rust target from upstream toolchain
         working-directory: upstream
