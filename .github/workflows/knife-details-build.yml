@@ -1,0 +1,69 @@
+name: Build Knife Details WASM
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'knife-details/**'
+      - '.github/workflows/knife-details-build.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout Knife Details build scripts
+        uses: actions/checkout@v4
+        with:
+          path: project
+          persist-credentials: false
+      - name: Checkout pinned genuine Nestbolt source
+        uses: actions/checkout@v4
+        with:
+          repository: skulitom/Nestbolt
+          ref: 4045822eb1fce0bb9253d637ca56df8b22cc8b6e
+          path: upstream
+          persist-credentials: false
+      - name: Set up Rust target from upstream toolchain
+        working-directory: upstream
+        run: |
+          rustup show
+          rustup target add wasm32-unknown-unknown
+      - name: Python and Node
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.19.0'
+      - name: Apply Knife Details settings with strict assertions
+        run: |
+          mkdir -p upstream/knife-details
+          cp project/knife-details/customize.py upstream/knife-details/customize.py
+          python upstream/knife-details/customize.py
+      - name: Install locked browser build dependencies
+        working-directory: upstream
+        run: |
+          cargo install wasm-bindgen-cli --version 0.2.129 --locked
+          cd web && npm ci
+      - name: Compile original Rust engine to real WASM and bundle frontend
+        working-directory: upstream
+        run: |
+          python scripts/build_web.py
+      - name: Verify distributable and wasm module
+        working-directory: upstream
+        run: |
+          python ../project/knife-details/verify_dist.py web/dist
+      - name: Package for Timeweb
+        working-directory: upstream/web/dist
+        run: |
+          python -m zipfile -c ../../../Knife_Details_FixedSheet_Timeweb.zip .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Knife_Details_FixedSheet_Timeweb
+          path: Knife_Details_FixedSheet_Timeweb.zip
+          if-no-files-found: error
+          retention-days: 14
