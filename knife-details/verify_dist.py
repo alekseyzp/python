@@ -12,7 +12,7 @@ assert wasm, "Genuine Rust WebAssembly module missing"
 for f in wasm:
     data=f.read_bytes()
     assert len(data)>100_000, f"Suspiciously small WASM: {f}"
-    assert data[:4]==b"\\0asm", f"Invalid WASM signature: {f}"
+    assert data[:4]==b"\0asm", f"Invalid WASM signature: {f}"
 scripts=re.findall(r'(?:src|href)="([^"]+)"', index)
 for path in scripts:
     if path.startswith(("./assets/","assets/")):
