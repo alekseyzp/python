@@ -17,7 +17,7 @@ replace_one("const emptyRequest = (): NestRequest => ({ parts: [], sheets: [blan
 old="rotations: ROTATIONS[0].value, allow_mirror: false, priority: 1"
 count=s.count(old)
 assert count==2,f"Expected two imported-part defaults, found {count}"
-s=s.replace(old,"rotations: { kind: 'free' }, allow_mirror: true, priority: 1")
+s=s.replace(old,"rotations: ROTATIONS[4].value, allow_mirror: true, priority: 1")
 replace_one("<h1>Nestbolt</h1>","<h1>Knife Details <small style={{ fontWeight: 400, opacity: 0.55, fontSize: '0.55em' }}>powered by Nestbolt</small></h1>")
 app.write_text(s)
 h=html.read_text()
