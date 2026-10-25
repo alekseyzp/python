@@ -2,7 +2,7 @@
 """Customize a pinned upstream Nestbolt checkout for Knife Details. Fail closed."""
 from pathlib import Path
 import re
-root=Path(__file__).resolve().parents[2]
+root=Path(__file__).resolve().parents[1]
 app=root/"web/src/app.tsx"
 html=root/"web/index.html"
 s=app.read_text()
